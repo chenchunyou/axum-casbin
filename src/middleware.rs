@@ -121,6 +121,11 @@ where
             let subject = vals.subject;
 
             if !subject.is_empty() {
+                // 匿名访问，直接放行
+                if subject == "*" {
+                    return Ok(inner.call(req).await?.map(body::Body::new))
+                }
+                
                 let mut lock = cloned_enforcer.write().await;
                 let args = if let Some(domain) = vals.domain {
                     vec![subject, domain, path, action]
